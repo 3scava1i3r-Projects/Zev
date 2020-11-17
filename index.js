@@ -35,6 +35,12 @@ client.on("message", async(message) => {
         case 'skip':
             skip(message, serverQueue);
             break;
+        case 'pause':
+            pause(serverQueue);
+            break;
+        case 'resume':
+            resume(serverQueue);
+            break;    
     }
  
     async function execute(message, serverQueue){
@@ -105,6 +111,28 @@ client.on("message", async(message) => {
         if(!serverQueue)
             return message.channel.send("There is nothing to skip!");
         serverQueue.connection.dispatcher.end();
+    }
+    function pause (serverQueue){
+        if(!message.member.voice.channel)
+            return message.channel.send("You need to join the voice chat first");
+        if(!serverQueue.connection)
+            return message.channel.send("There is no songs being played");
+        if(serverQueue.connection.dispatcher.paused){
+            return message.channel.send("already paused!"); 
+        }     
+        serverQueue.connection.dispatcher.pause();    
+        message.channel.send("Paused the current song!");
+    }
+    function resume (serverQueue){
+        if(!message.member.voice.channel)
+            return message.channel.send("You need to join the voice chat first");
+        if(!serverQueue.connection)
+            return message.channel.send("There is no songs being played");
+        if(serverQueue.connection.dispatcher.resumed){
+            return message.channel.send("already resume!"); 
+        }     
+        serverQueue.connection.dispatcher.resume();    
+        message.channel.send("Resuming the current song!");
     }
 })
  
