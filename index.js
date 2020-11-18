@@ -1,7 +1,10 @@
 const { executionAsyncResource } = require('async_hooks');
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
- 
+const { SkynetClient, genKeyPairFromSeed } = require('skynet-js');
+const dogeSeed = require('doge-seed');
+
+
 const { YTSearcher } = require('ytsearcher');
  
 const searcher = new YTSearcher({
@@ -14,7 +17,7 @@ const client = new Discord.Client();
 const queue = new Map();
  
 client.on("ready", () => {
-    console.log("I am online!")
+    console.log("I am online!");
 })
  
 client.on("message", async(message) => {
@@ -22,9 +25,9 @@ client.on("message", async(message) => {
  
     const serverQueue = queue.get(message.guild.id);
  
-    const args = message.content.slice(prefix.length).trim().split(/ +/g)
+    const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
- 
+    
     switch(command){
         case 'play':
             execute(message, serverQueue);
@@ -40,7 +43,18 @@ client.on("message", async(message) => {
             break;
         case 'resume':
             resume(serverQueue);
-            break;    
+            break;
+        case 'playlist':
+            playlist(serverQueue);
+            break;
+        case 'saveq':
+            saveq(serverQueue);
+            break;
+        case 'info':
+            info();
+            break;
+        default:
+                          
     }
  
     async function execute(message, serverQueue){
@@ -134,6 +148,62 @@ client.on("message", async(message) => {
         serverQueue.connection.dispatcher.resume();    
         message.channel.send("Resuming the current song!");
     }
+    function playlist (serverQueue){
+        if(!message.member.voice.channel)
+            return message.channel.send("You need to join the voice chat first");
+        if(!serverQueue){
+            return message.channel.send("nothing to save! add a song first");
+        }else{
+
+            const qembed  = new Discord.MessageEmbed();
+            qembed.setColor('#add8e6');
+            for(i = 0; i< serverQueue.songs.length ; i++){
+                //console.log(serverQueue.songs[i]);
+                qembed.addField(`Song-[${i+1}]` , serverQueue.songs[i].title );
+            }
+            message.channel.send(qembed);
+             
+        }    
+    }
+    function info() {
+        const infoembed = new Discord.MessageEmbed();
+        infoembed.setColor('#add8e6')
+        .setTitle('Some info on Zev Commands','\u200B')
+        .addField('Play any song - zplay','\u200B')
+        .addField('Pause the current track - zpause','\u200B')
+        .addField('Resume the current track - zresume','\u200B')
+        .addField('Skip the currnt track - zskip','\u200B')
+        .addField('Get the queue of songs - zplaylist','\u200B')
+        .addField('Save queue for future playing - zsaveq','\u200B')
+
+        message.channel.send(infoembed);
+    }
+    function saveq (serverQueue){
+
+        const client = new SkynetClient();
+        const { privateKey } = genKeyPairFromSeed(dogeSeed());
+
+
+        const saveembed  = new Discord.MessageEmbed()
+            .setColor('#add8e6');
+            for(i = 0; i< serverQueue.songs.length ; i++){
+                saveembed.addField(`Song-[${i+1}]` , serverQueue.songs[i].title );
+            }
+
+        //const dataKey = name;
+        const json = {saveembed};
+
+        async function savequeue() {
+        try {
+            await client.db.setJSON(privateKey, message.author , json);
+            console.log('lol');
+        } catch (error) {
+            console.log(error);
+            }
+        }
+        savequeue();
+    }
+    
 })
  
 client.login("")
