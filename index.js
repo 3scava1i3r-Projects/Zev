@@ -1,14 +1,15 @@
 const { executionAsyncResource } = require('async_hooks');
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
-const { SkynetClient, genKeyPairFromSeed } = require('skynet-js');
-const dogeSeed = require('doge-seed');
+const IPFS = require('ipfs')
+const OrbitDB = require('orbit-db');
+const config = require("./config.json");
 
 
 const { YTSearcher } = require('ytsearcher');
  
 const searcher = new YTSearcher({
-    key: "",
+    key: config.ytkey,
     revealed: true
 });
  
@@ -53,6 +54,9 @@ client.on("message", async(message) => {
         case 'info':
             info();
             break;
+        case 'loadq':
+            loadq(name);
+            break;    
         default:
                           
     }
@@ -180,30 +184,50 @@ client.on("message", async(message) => {
     }
     function saveq (serverQueue){
 
-        const client = new SkynetClient();
-        const { privateKey } = genKeyPairFromSeed(dogeSeed());
-
-
         const saveembed  = new Discord.MessageEmbed()
-            .setColor('#add8e6');
+            .setColor('#add8e6')
+            .setAuthor(`${message.channel.author}`)
             for(i = 0; i< serverQueue.songs.length ; i++){
                 saveembed.addField(`Song-[${i+1}]` , serverQueue.songs[i].title );
             }
 
-        //const dataKey = name;
-        const json = {saveembed};
+        //const json = {saveembed};
 
-        async function savequeue() {
-        try {
-            await client.db.setJSON(privateKey, message.author , json);
-            console.log('lol');
-        } catch (error) {
-            console.log(error);
+        async function qu () {
+        
+        const ipfsOptions = {
+            EXPERIMENTAL: {
+                pubsub: true
             }
         }
-        savequeue();
+    
+        const ipfs = await IPFS.create(ipfsOptions) 
+        const orbitdb = await OrbitDB.createInstance(ipfs)
+        const db = await orbitdb.keyvalue('songsq')
+        console.log(db.address.toString())
+
+
+        
+        const options = {
+            // Give write access to everyone
+            accessController: {
+              write: ['*']
+            }
+          }
+
+        //const db = await orbitdb.keyvalue('songsq')
+        await db.put(`${message.channel.author}`, {saveembed})
+        const value = db.get(`${message.channel.author}`)
+        console.log(value.fields)
+        console.log(value)
+        ipfs.stop().catch(err => console.error(err))
+        }
+        qu()
+
     }
+
+    function loadq (name){}
     
 })
  
-client.login("")
+client.login(config.dskey)
