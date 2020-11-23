@@ -3,13 +3,13 @@ const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
 const IPFS = require('ipfs')
 const OrbitDB = require('orbit-db');
-const config = require("./config.json");
+//const config = require("./config.json");
 
 
 const { YTSearcher } = require('ytsearcher');
  
 const searcher = new YTSearcher({
-    key: config.ytkey,
+    key: process.env.ytkey,
     revealed: true
 });
  
@@ -230,4 +230,4 @@ client.on("message", async(message) => {
     
 })
  
-client.login(config.dskey)
+client.login(process.env.dskey)
