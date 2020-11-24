@@ -172,13 +172,13 @@ client.on("message", async(message) => {
     function info() {
         const infoembed = new Discord.MessageEmbed();
         infoembed.setColor('#add8e6')
-        .setTitle('Some info on Zev Commands','\u200B')
-        .addField('Play any song - zplay','\u200B')
+        .setTitle('Some info on Zev Commands ','\u200B')
+        .addField('Play any song - zplay <song name>','\u200B')
         .addField('Pause the current track - zpause','\u200B')
         .addField('Resume the current track - zresume','\u200B')
         .addField('Skip the currnt track - zskip','\u200B')
         .addField('Get the queue of songs - zplaylist','\u200B')
-        .addField('Save queue for future playing - zsaveq','\u200B')
+        // .addField('Save queue for future playing - zsaveq (working under progress might break the bot)','\u200B')
 
         message.channel.send(infoembed);
     }
