@@ -4,7 +4,7 @@ const ytdl = require('ytdl-core');
 const IPFS = require('ipfs')
 const OrbitDB = require('orbit-db');
 //const config = require("./config.json");
-
+const fetch = require("node-fetch");
 
 const { YTSearcher } = require('ytsearcher');
  
@@ -12,7 +12,9 @@ const searcher = new YTSearcher({
     key: process.env.ytkey,
     revealed: true
 });
- 
+
+
+
 const client = new Discord.Client();
  
 const queue = new Map();
@@ -28,7 +30,9 @@ client.on("message", async(message) => {
  
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
-    
+    const name = message.content.length
+
+    const extraarg = message.content.slice(5, message.content.length).trim();
     switch(command){
         case 'play':
             execute(message, serverQueue);
@@ -56,8 +60,15 @@ client.on("message", async(message) => {
             break;
         case 'loadq':
             loadq(name);
-            break;    
+            break;
+        case 'valo' :
+            
+            
+            console.log(name)
+            console.log(extraarg)
+            valo(extraarg)
         default:
+            
                           
     }
  
@@ -171,14 +182,16 @@ client.on("message", async(message) => {
     }
     function info() {
         const infoembed = new Discord.MessageEmbed();
-        infoembed.setColor('#add8e6')
-        .setTitle('Some info on Zev Commands ','\u200B')
-        .addField('Play any song - zplay <song name>','\u200B')
-        .addField('Pause the current track - zpause','\u200B')
-        .addField('Resume the current track - zresume','\u200B')
-        .addField('Skip the currnt track - zskip','\u200B')
-        .addField('Get the queue of songs - zplaylist','\u200B')
-        // .addField('Save queue for future playing - zsaveq (working under progress might break the bot)','\u200B')
+        infoembed
+          .setColor("#add8e6")
+          .setTitle("Some info on Zev Commands ", "\u200B")
+          .addField("Play any song - zplay <song name>", "\u200B")
+          .addField("Pause the current track - zpause", "\u200B")
+          .addField("Resume the current track - zresume", "\u200B")
+          .addField("Skip the currnt track - zskip", "\u200B")
+          .addField("Get the queue of songs - zplaylist", "\u200B")
+          .addField("Get information about your selected agent - zvalo <agent name>", "\u200B");
+        
 
         message.channel.send(infoembed);
     }
@@ -227,7 +240,47 @@ client.on("message", async(message) => {
     }
 
     function loadq (name){}
+
+    function valo(name){
+
+        fetch("https://valorant-api.com/v1/agents")
+          .then((response) => response.json())
+          .then((data) => {
+              const valoembed = new Discord.MessageEmbed();
+              valoembed
+                .setColor("#add8e6")
+                .setTitle(`Some info on selected Valorant Agent`, "\u200B")
+                .setThumbnail(
+                  "https://cdn.dribbble.com/users/2348/screenshots/10696082/valorant_1_4x.png"
+                );
+            for (i = 0 ; i< data.data.length ; i++){
+                
+                if (name == data.data[i].displayName.toLowerCase())
+                    {
+                    console.log("i am free");
+
+                    valoembed
+                      .addField(`Agent Number: ${i}`, "\u200B")
+                      .setImage(`${data.data[i].displayIcon}`)
+                      .addField(`Name: ${data.data[i].displayName}`, "\u200B")
+                      .addField(
+                        `Description: ${data.data[i].description}`,
+                        "\u200B"
+                      )
+                      .addField(
+                        `${data.data[i].role.displayName}: ${data.data[i].role.description}`,
+                        "\u200B"
+                      );
+                    }       
+                }
+              console.log("---")
+
+              message.channel.send(valoembed);
+        });
+
+        
+    }
     
 })
  
-client.login(process.env.dskey)
+client.login(process.env.dskey);
