@@ -13,10 +13,15 @@ const searcher = new YTSearcher({
     revealed: true
 });
 
-
+var http = require("http");
+http
+  .createServer(function (req, res) {
+    res.write("I'm alive");
+    res.end();
+  })
+  .listen(8080);
 
 const client = new Discord.Client();
- 
 const queue = new Map();
  
 client.on("ready", () => {
@@ -283,4 +288,14 @@ client.on("message", async(message) => {
     
 })
  
+/* setInterval(async () => {
+  await fetch("https://paint-functional-mistake.glitch.me").then(
+    console.log("pinged!")
+  );
+}, 240000);
+ */  // for pinging in glitch
+
 client.login(process.env.dskey);
+
+
+// check uptimerobot pls for uptiming bot also glitch for deploying

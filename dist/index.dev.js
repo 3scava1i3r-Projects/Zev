@@ -21,6 +21,13 @@ var searcher = new YTSearcher({
   key: process.env.ytkey,
   revealed: true
 });
+
+var http = require("http");
+
+http.createServer(function (req, res) {
+  res.write("I'm alive");
+  res.end();
+}).listen(8080);
 var client = new Discord.Client();
 var queue = new Map();
 client.on("ready", function () {
