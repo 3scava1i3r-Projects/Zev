@@ -1,8 +1,7 @@
 const { executionAsyncResource } = require('async_hooks');
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
-const IPFS = require('ipfs')
-const OrbitDB = require('orbit-db');
+
 //const config = require("./config.json");
 const fetch = require("node-fetch");
 const glitchyPing = require("glitchy-ping");
@@ -211,36 +210,7 @@ client.on("message", async(message) => {
 
         //const json = {saveembed};
 
-        async function qu () {
         
-        const ipfsOptions = {
-            EXPERIMENTAL: {
-                pubsub: true
-            }
-        }
-    
-        const ipfs = await IPFS.create(ipfsOptions) 
-        const orbitdb = await OrbitDB.createInstance(ipfs)
-        const db = await orbitdb.keyvalue('songsq')
-        console.log(db.address.toString())
-
-
-        
-        const options = {
-            // Give write access to everyone
-            accessController: {
-              write: ['*']
-            }
-          }
-
-        //const db = await orbitdb.keyvalue('songsq')
-        await db.put(`${message.channel.author}`, {saveembed})
-        const value = db.get(`${message.channel.author}`)
-        console.log(value.fields)
-        console.log(value)
-        ipfs.stop().catch(err => console.error(err))
-        }
-        qu()
 
     }
 
