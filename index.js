@@ -1,10 +1,11 @@
 const { executionAsyncResource } = require('async_hooks');
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
-const IPFS = require('ipfs')
-const OrbitDB = require('orbit-db');
+
 //const config = require("./config.json");
 const fetch = require("node-fetch");
+const glitchyPing = require("glitchy-ping");
+
 
 const { YTSearcher } = require('ytsearcher');
  
@@ -69,8 +70,6 @@ client.on("message", async(message) => {
         case 'valo' :
             
             
-            console.log(name)
-            console.log(extraarg)
             valo(extraarg)
         default:
             
@@ -177,7 +176,7 @@ client.on("message", async(message) => {
 
             const qembed  = new Discord.MessageEmbed();
             qembed.setColor('#add8e6');
-            for(i = 0; i< serverQueue.songs.length ; i++){
+            for(let i = 0; i< serverQueue.songs.length ; i++){
                 //console.log(serverQueue.songs[i]);
                 qembed.addField(`Song-[${i+1}]` , serverQueue.songs[i].title );
             }
@@ -205,42 +204,13 @@ client.on("message", async(message) => {
         const saveembed  = new Discord.MessageEmbed()
             .setColor('#add8e6')
             .setAuthor(`${message.channel.author}`)
-            for(i = 0; i< serverQueue.songs.length ; i++){
+            for(let i = 0; i< serverQueue.songs.length ; i++){
                 saveembed.addField(`Song-[${i+1}]` , serverQueue.songs[i].title );
             }
 
         //const json = {saveembed};
 
-        async function qu () {
         
-        const ipfsOptions = {
-            EXPERIMENTAL: {
-                pubsub: true
-            }
-        }
-    
-        const ipfs = await IPFS.create(ipfsOptions) 
-        const orbitdb = await OrbitDB.createInstance(ipfs)
-        const db = await orbitdb.keyvalue('songsq')
-        console.log(db.address.toString())
-
-
-        
-        const options = {
-            // Give write access to everyone
-            accessController: {
-              write: ['*']
-            }
-          }
-
-        //const db = await orbitdb.keyvalue('songsq')
-        await db.put(`${message.channel.author}`, {saveembed})
-        const value = db.get(`${message.channel.author}`)
-        console.log(value.fields)
-        console.log(value)
-        ipfs.stop().catch(err => console.error(err))
-        }
-        qu()
 
     }
 
@@ -258,7 +228,7 @@ client.on("message", async(message) => {
                 .setThumbnail(
                   "https://cdn.dribbble.com/users/2348/screenshots/10696082/valorant_1_4x.png"
                 );
-            for (i = 0 ; i< data.data.length ; i++){
+            for (let i = 0 ; i< data.data.length ; i++){
                 
                 if (name == data.data[i].displayName.toLowerCase())
                     {
@@ -282,12 +252,22 @@ client.on("message", async(message) => {
 
               message.channel.send(valoembed);
         });
-
-        
     }
-    
 })
+//let gg;
+
+//if(gg === 5){
+//  gg = 0;
+//}
+//setInterval(async () => {
+//  await fetch("https://paint-functional-mistake.glitch.me").then(gg++)
+//},240000)
+
+glitchyPing.pingURL("https://paint-functional-mistake.glitch.me", 180000); // 180000ms == 180s == 3min
+
+
  
+<<<<<<< HEAD
 /* setInterval(async () => {
   await fetch("https://paint-functional-mistake.glitch.me").then(
     console.log("pinged!")
@@ -299,3 +279,6 @@ client.login(process.env.dskey);
 
 
 // check uptimerobot pls for uptiming bot also glitch for deploying
+=======
+client.login(process.env.dskey);
+>>>>>>> b1420f3388f2bcc3129e5e13f64bab1d1803c48a
